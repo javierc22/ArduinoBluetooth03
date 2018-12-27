@@ -17,8 +17,9 @@ public class MainActivity extends AppCompatActivity {
     // Bluetooth
     BluetoothAdapter mBluetoothAdapter = null;
     private static final int ENABLE_BT = 1;
-    private static final int ENABLE_CONECTION = 1;
+    private static final int ENABLE_CONECTION = 2;
     boolean conection = false;
+    private static String MAC = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +80,21 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
 
                     finish();
+                }
+
+                break;
+
+            case ENABLE_CONECTION:
+                if (resultCode == Activity.RESULT_OK) {
+                    MAC = data.getExtras().getString(ListDevices.ADDRESS_MAC);
+
+                    Toast.makeText(this,
+                            "MAC: " + MAC,
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this,
+                            "Error al obtener dirección MAC",
+                            Toast.LENGTH_SHORT).show();
                 }
 
                 break;
