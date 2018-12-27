@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -16,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     // Bluetooth
     BluetoothAdapter mBluetoothAdapter = null;
     private static final int ENABLE_BT = 1;
+    private static final int ENABLE_CONECTION = 1;
+    boolean conection = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,20 @@ public class MainActivity extends AppCompatActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, ENABLE_BT);
         }
+
+        // Events
+        buttonConectar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (conection) {
+                    // Desconectar
+                } else {
+                    // Conectar
+                    Intent intent = new Intent(MainActivity.this, ListDevices.class);
+                    startActivityForResult(intent, ENABLE_CONECTION);
+                }
+            }
+        });
     }
 
     @Override
