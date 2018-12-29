@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     boolean myConection = false;
     private static String MAC = null;
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    ConnectedThread connectedThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +82,39 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        buttonLed1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (myConection) {
+                    connectedThread.write("led1");
+                } else {
+                    Toast.makeText(MainActivity.this, "Sin conexión Bluetooth", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        buttonLed2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (myConection) {
+                    connectedThread.write("led2");
+                } else {
+                    Toast.makeText(MainActivity.this, "Sin conexión Bluetooth", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        buttonLed3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (myConection) {
+                    connectedThread.write("led3");
+                } else {
+                    Toast.makeText(MainActivity.this, "Sin conexión Bluetooth", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -116,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
                         mSocket = mDevice.createRfcommSocketToServiceRecord(MY_UUID);
                         mSocket.connect();
                         myConection = true;
+                        connectedThread = new ConnectedThread(mSocket);
+                        connectedThread.start();
                         buttonConectar.setText("Desconectar");
                         Toast.makeText(this, "Estás conectado con: " + MAC, Toast.LENGTH_SHORT).show();
 
@@ -131,6 +169,62 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 break;
+        }
+    }
+
+    private class ConnectedThread extends Thread {
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
+
+        public ConnectedThread(BluetoothSocket socket) {
+            mSocket = socket;
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+
+            // Get the input and output streams, using temp objects because
+            // member streams are final
+            try {
+                tmpIn = socket.getInputStream();
+                tmpOut = socket.getOutputStream();
+            } catch (IOException e) { }
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
+        }
+
+        public void run() {
+            byte[] buffer = new byte[1024];  // buffer store for the stream
+            int bytes; // bytes returned from read()
+
+            // Keep listening to the InputStream until an exception occurs
+            /*
+            while (true) {
+                try {
+                    // Read from the InputStream
+                    bytes = mmInStream.read(buffer);
+                    // Send the obtained bytes to the UI activity
+                    mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
+                            .sendToTarget();
+                } catch (IOException e) {
+                    break;
+                }
+            } */
+        }
+
+        /* Call this from the main activity to send data to the remote device */
+        public void write(String enviarDatos) {
+            byte[] mBuffer = enviarDatos.getBytes();
+
+            try {
+                mmOutStream.write(mBuffer);
+            } catch (IOException e) { }
+        }
+
+        /* Call this from the main activity to shutdown the connection */
+        public void cancel() {
+            try {
+                mSocket.close();
+            } catch (IOException e) { }
         }
     }
 }
