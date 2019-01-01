@@ -1,12 +1,16 @@
 package com.javierec.arduinobluetooth03;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -26,13 +30,20 @@ public class MainActivity extends AppCompatActivity {
     BluetoothAdapter mBluetoothAdapter = null;
     BluetoothDevice mDevice = null;
     BluetoothSocket mSocket = null;
+
     private static final int ENABLE_BT = 1;
     private static final int ENABLE_CONECTION = 2;
+    private static final int MESSAGE_READ = 3;
+
     boolean myConection = false;
     private static String MAC = null;
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     ConnectedThread connectedThread;
+    Handler mHandler;
+    StringBuilder dataBluetooth = new StringBuilder();
 
+
+    @SuppressLint("HandlerLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +126,58 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mHandler = new Handler() {
+            @Override
+            public void handleMessage(android.os.Message msg) {
+                if (msg.what == MESSAGE_READ) {
+                    String dataReceived = (String) msg.obj;
+                    dataBluetooth.append(dataReceived);
+                    int endInformation = dataBluetooth.indexOf("}");
+
+                    if (endInformation > 0) {
+                        String dataComplete = dataBluetooth.substring(0, endInformation);
+                        int informationSize = dataComplete.length();
+
+                        if (dataBluetooth.charAt(0) == '{') {
+                            String dataFinal = dataBluetooth.substring(1, informationSize);
+                            Log.d("Recibidos", dataFinal);
+
+                            // Set Text Button Led 1
+                            if (dataFinal.contains("l1on")) {
+                                buttonLed1.setText("LED1 ON");
+                                Log.d("LED1","ON");
+                            } else if (dataFinal.contains("l1off")) {
+                                buttonLed1.setText("LED1 OFF");
+                                Log.d("LED1","OFF");
+                            }
+
+                            // Set Text Button Led 2
+                            if (dataFinal.contains("l2on")) {
+                                buttonLed2.setText("LED2 ON");
+                                Log.d("LED2","ON");
+                            } else if (dataFinal.contains("l2off")) {
+                                buttonLed2.setText("LED2 OFF");
+                                Log.d("LED2","OFF");
+                            }
+
+                            // Set Text Button Led 3
+                            if (dataFinal.contains("l3on")) {
+                                buttonLed3.setText("LED3 ON");
+                                Log.d("LED3","ON");
+                            } else if (dataFinal.contains("l3off")) {
+                                buttonLed3.setText("LED3 OFF");
+                                Log.d("LED3","OFF");
+                            }
+
+                        }
+
+                        dataBluetooth.delete(0, dataBluetooth.length());
+
+                    }
+                }
+            }
+        };
     }
 
     @Override
@@ -197,18 +260,19 @@ public class MainActivity extends AppCompatActivity {
             int bytes; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs
-            /*
             while (true) {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
+                    String dataBt = new String(buffer, 0, bytes);
+
                     // Send the obtained bytes to the UI activity
-                    mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
+                    mHandler.obtainMessage(MESSAGE_READ, bytes, -1, dataBt).sendToTarget();
+
                 } catch (IOException e) {
                     break;
                 }
-            } */
+            }
         }
 
         /* Call this from the main activity to send data to the remote device */
