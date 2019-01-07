@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/img01"
     tools:context=".MainActivity">
 
 
@@ -16,6 +17,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
         android:text="Led 1"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/button_led1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -28,6 +31,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
         android:text="Led 2"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/button_led2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_led_1" />
@@ -40,6 +45,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
         android:text="Led 3"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/button_led3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_led_2" />
@@ -52,6 +59,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="Conectar"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/button_disconnect"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
